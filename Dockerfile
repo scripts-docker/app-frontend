@@ -1,17 +1,27 @@
 FROM 172.30.1.1:5000/ci/nginx-base
 
-## copy over the artifacts in dist folder to default nginx public folder
-ADD https://github.com/scripts-docker/app-frontend/blob/master/app-frontend.tar.gz?raw=true ${APP_ROOT}
-
-RUN ls -lha
+ADD http://nexus-ci.127.0.0.1.nip.io/repository/npm-privado/angular-example/-/angular-example-1.0.0.tgz ${APP_ROOT}
 
 RUN mkdir dist && \
-    tar -xvzf app-frontend.tar.gz -C dist/
+    tar -xvzf angular-example-1.0.0.tgz -C dist && \
+    mv dist/package/* /usr/share/nginx/html
 
-COPY dist/ /usr/share/nginx/html
+RUN ls -lha /usr/share/nginx/html
 
-RUN chgrp -R 0 /usr/share/nginx/ && \
-    chmod -R g=u /usr/share/nginx/
+RUN chmod -R u+x ${APP_ROOT}/bin && \
+    chgrp -R 0 ${APP_ROOT} && \
+    chmod -R g=u ${APP_ROOT} /etc/passwd && \
+    chgrp -R 0 /etc/nginx/ && \
+    chmod -R g=u /etc/nginx/ && \
+    chgrp -R 0 /var/log/nginx/ && \
+    chmod -R g=u /var/log/nginx/ && \
+    chgrp -R 0 /var/cache/nginx/ && \
+    chmod -R g=u /var/cache/nginx/ && \
+    chgrp -R 0 /var/run/ && \
+    chmod -R g=u /var/run/
 
-### user name recognition at runtime w/ an arbitrary uid - for OpenShift deployments
+USER 10001
+
 ENTRYPOINT [ "uid_entrypoint" ]
+
+CMD ["nginx", "-g", "daemon off;"]
