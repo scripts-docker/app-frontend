@@ -1,9 +1,9 @@
 FROM 172.30.1.1:5000/ci/nginx-base
 
-ADD http://nexus-ci.127.0.0.1.nip.io/repository/npm-privado/angular-example/-/angular-example-6.0.0.tgz ${APP_ROOT}
+ADD http://nexus-ci.127.0.0.1.nip.io/repository/npm-privado/angular-example/-/angular-example-7.0.0.tgz ${APP_ROOT}
 
 RUN mkdir dist && \
-    tar -xvzf angular-example-6.0.0.tgz -C dist && \
+    tar -xvzf angular-example-7.0.0.tgz -C dist && \
     mv dist/package/* /usr/share/nginx/html
 
 RUN ls -lha /usr/share/nginx/html
